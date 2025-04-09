@@ -17,6 +17,7 @@ set(LIB_DIR "${PROJECT_SOURCE_DIR}/lib")
 add_definitions(-DBUILD_VERSION_MAJOR=${conserva_VERSION_MAJOR})
 add_definitions(-DBUILD_VERSION_MINOR=${conserva_VERSION_MINOR})
 add_definitions(-DBUILD_PROJECT_NAME="${PROJECT_NAME}")
+add_definitions(-DBUILD_INSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
 
 # Dependencies
 include(FetchContent)
@@ -34,15 +35,25 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(argparse)
 
-add_subdirectory("${LIB_DIR}/tray")
+#add_subdirectory("${LIB_DIR}/tray")
 
 # Application
 FILE(GLOB SOURCES "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/model/*.cpp" "${SOURCE_DIR}/adapters/*.cpp" "${SOURCE_DIR}/controller/*.cpp" "${SOURCE_DIR}/services/*.cpp" )
-message(${SOURCES})
+list(APPEND SOURCES
+    ${LIB_DIR}/tray/tray_linux.cpp
+    ${LIB_DIR}/tray/QtTrayMenu.cpp
+)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
-set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+find_package(Qt6 COMPONENTS Core Widgets Gui REQUIRED)
+set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX AUTOMOC ON)
+target_compile_definitions(${PROJECT_NAME} PRIVATE TRAY_QT6=1)
+add_compile_options("-v")
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR} "${LIB_DIR}/tray" ${GTK3_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS} ${PIXBUF_INCLUDE_DIRS} ${JSON_INCLUDE_DIRS})
 
-target_link_libraries(${PROJECT_NAME} argparse ${GTK3_LIBRARIES} tray ${LIBNOTIFY_LIBRARIES} ${JSON_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE argparse ${GTK3_LIBRARIES} ${LIBNOTIFY_LIBRARIES} ${JSON_LIBRARIES} Qt6::Widgets Qt6::Core Qt6::Gui)
+
+# Installation
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+install(DIRECTORY icons DESTINATION share/${PROJECT_NAME})

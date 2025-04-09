@@ -14,7 +14,7 @@ static std::optional<unsigned int> parse_time(std::string string);
 
 int main(int argc, char *argv[]) {
     auto program = argparse::ArgumentParser(argv[0]);
-    program.add_description("A command line first pomodoro timer");
+    program.add_description("A command line first pomodoro timer").add_epilog("Run with no arguments to start a server instance.");
 
     auto start = argparse::ArgumentParser("start");
     start.add_argument("-n", "--name").help("Pomodoro name");

@@ -5,9 +5,9 @@
 #include "tray.h"
 
 
-#define ICON_STANDBY  "assets/icon_standby.png"
-#define ICON_WORKING  "assets/icon_working.png"
-#define ICON_RELAXING "assets/icon_relaxing.png"
+#define ICON_STANDBY  BUILD_INSTALL_PREFIX "/share/conserva/icons/icon_standby.png"
+#define ICON_WORKING  BUILD_INSTALL_PREFIX "/share/conserva/icons/icon_working.png"
+#define ICON_RELAXING BUILD_INSTALL_PREFIX "/share/conserva/icons/icon_relaxing.png"
 
 
 static void quit_cb(struct tray_menu_item *item);
