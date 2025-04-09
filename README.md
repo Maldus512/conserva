@@ -27,4 +27,4 @@ I succeeded, although at great cost.
 
 ## Credits
 
-Icons created by [https://www.flaticon.com/free-icons/pomodoro](nangicon - Flaticon)
+Icons created by [nangicon - Flaticon](https://www.flaticon.com/free-icons/pomodoro)
