@@ -4,24 +4,10 @@
 #include "tray.hpp"
 #include "tray.h"
 
-#if defined(_WIN32) || defined(_WIN64)
-#define TRAY_WINAPI 1
-#elif defined(__linux__) || defined(linux) || defined(__linux)
-#define TRAY_QT 1
-#elif defined(__APPLE__) || defined(__MACH__)
-#define TRAY_APPKIT 1
-#endif
 
-#if TRAY_QT
-#define TRAY_ICON1 "assets/icon-24px.png"
-#define TRAY_ICON2 "assets/icon2-24px.png"
-#elif TRAY_APPKIT
-#define TRAY_ICON1 "assets/icon.png"
-#define TRAY_ICON2 "assets/icon2.png"
-#elif TRAY_WINAPI
-#define TRAY_ICON1 "assets/icon.ico"
-#define TRAY_ICON2 "assets/icon2.ico"
-#endif
+#define ICON_STANDBY  "assets/icon_standby.png"
+#define ICON_WORKING  "assets/icon_working.png"
+#define ICON_RELAXING "assets/icon_relaxing.png"
 
 
 static void quit_cb(struct tray_menu_item *item);
@@ -33,36 +19,9 @@ void window_cb(struct tray *tray) {
     (void)tray;
 }
 
-void toggle_cb(struct tray_menu_item *item) {
-    printf("toggle cb\n");
-    item->checked     = !item->checked;
-    struct tray *tray = tray_get_instance();
-    if (tray != NULL)
-        tray_update(tray);
-}
-
-void hello_cb(struct tray_menu_item *item) {
-    (void)item;
-    printf("hello cb: changing icon\n");
-    struct tray *tray = tray_get_instance();
-    if (tray == NULL)
-        return;
-    if (strcmp(tray->icon_filepath, TRAY_ICON1) == 0) {
-        tray->icon_filepath = TRAY_ICON2;
-    } else {
-        tray->icon_filepath = TRAY_ICON1;
-    }
-    tray_update(tray);
-}
-
-void submenu_cb(struct tray_menu_item *item) {
-    (void)item;
-    printf("submenu: clicked on %s\n", item->text);
-    //  tray_update(tray_get_instance());
-}
 
 static struct tray tray = {
-    .icon_filepath = TRAY_ICON1,
+    .icon_filepath = ICON_STANDBY,
     .tooltip       = "Conserva",
     .cb            = window_cb,
     .menu =
@@ -107,17 +66,28 @@ void Tray::update(Model &model) {
         case Model::PomodoroState::standby: {
             tray.menu[0].text    = "Start";
             tray.menu[0].cb      = start_cb;
-            tray.menu[0].checked = 1;
+            tray.menu[0].checked = 0;
+            tray.icon_filepath   = ICON_STANDBY;
             break;
         }
-        case Model::PomodoroState::working:
+        case Model::PomodoroState::working: {
+            tray.menu[0].text    = "Stop";
+            tray.menu[0].cb      = stop_cb;
+            tray.menu[0].checked = 1;
+            tray.icon_filepath   = ICON_WORKING;
+            break;
+        }
+
         case Model::PomodoroState::relaxing: {
             tray.menu[0].text    = "Stop";
             tray.menu[0].cb      = stop_cb;
-            tray.menu[0].checked = 0;
+            tray.menu[0].checked = 1;
+            tray.icon_filepath   = ICON_RELAXING;
             break;
         }
     }
+
+    tray_update(&tray);
 }
 
 

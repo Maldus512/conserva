@@ -9,3 +9,7 @@
  - Create snap packet
  - Save last activity to data file (where?)
  - Use a config file for images and sounds
+
+## Credits
+
+Icons created by [https://www.flaticon.com/free-icons/pomodoro](nangicon - Flaticon)
