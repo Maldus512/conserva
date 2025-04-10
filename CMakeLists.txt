@@ -27,15 +27,13 @@ pkg_check_modules(GTK REQUIRED gtk+-3.0)
 pkg_check_modules(LIBNOTIFY REQUIRED libnotify)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
 pkg_check_modules(PIXBUF REQUIRED gdk-pixbuf-2.0)
-pkg_check_modules(JSON REQUIRED jsoncpp)
+pkg_check_modules(JSONCPP REQUIRED jsoncpp)
 
 FetchContent_Declare(
     argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
 )
 FetchContent_MakeAvailable(argparse)
-
-#add_subdirectory("${LIB_DIR}/tray")
 
 # Application
 FILE(GLOB SOURCES "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/model/*.cpp" "${SOURCE_DIR}/adapters/*.cpp" "${SOURCE_DIR}/controller/*.cpp" "${SOURCE_DIR}/services/*.cpp" )

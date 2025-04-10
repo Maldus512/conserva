@@ -41,72 +41,72 @@ int main(int argc, char *argv[]) {
 
     try {
         program.parse_args(argc, argv);
+
+        if (program["--help"] == true) {
+            std::cout << program << std::endl;
+        }
+
+        // Start message
+        if (program.is_subcommand_used(start)) {
+            auto work_time    = start.present("--work-time");
+            auto work_seconds = std::optional<unsigned int>();
+
+            if (work_time.has_value()) {
+                work_seconds = parse_time(work_time.value());
+                if (!work_seconds.has_value()) {
+                    std::cerr << "Invalid time input: " << work_time.value();
+                    std::cerr << program << std::endl;
+                    return 1;
+                }
+            }
+
+            auto relax_time    = start.present("--relax-time");
+            auto relax_seconds = std::optional<unsigned int>();
+            if (relax_time.has_value()) {
+                relax_seconds = parse_time(relax_time.value());
+                if (!relax_seconds.has_value()) {
+                    std::cerr << "Invalid time input: " << relax_time.value();
+                    std::cerr << program << std::endl;
+                    return 1;
+                }
+            }
+
+            Controller::send_start_message(start.present("--name"), work_seconds, relax_seconds);
+        }
+        // Stop message
+        else if (program.is_subcommand_used(stop)) {
+            Controller::send_stop_message();
+        }
+        // Config message
+        else if (program.is_subcommand_used(config)) {
+            Controller::send_config_message(program["--auto-reload"] == true);
+        }
+        // Report message
+        else if (program.is_subcommand_used(report)) {
+            if (auto response = optional<string>(); (response = Controller::send_report_message()).has_value()) {
+                std::cout << response.value() << "\n";
+            }
+        }
+        // Server mode
+        else {
+            Controller controller = Controller(program["--auto-reload"] == true);
+
+            {
+                struct sigaction sa;
+                sigemptyset(&sa.sa_mask);
+                sa.sa_flags   = 0;
+                sa.sa_handler = signal_handler;
+                sigaction(SIGINT, &sa, nullptr);
+            }
+
+            while (!controller.should_quit()) {
+                controller.manage_server();
+            }
+        }
     } catch (const std::exception &err) {
         std::cerr << err.what() << std::endl;
         std::cerr << program;
         return 1;
-    }
-
-    if (program["--help"] == true) {
-        std::cout << program << std::endl;
-    }
-
-    // Start message
-    if (program.is_subcommand_used(start)) {
-        auto work_time    = start.present("--work-time");
-        auto work_seconds = std::optional<unsigned int>();
-
-        if (work_time.has_value()) {
-            work_seconds = parse_time(work_time.value());
-            if (!work_seconds.has_value()) {
-                std::cout << "Invalid time input: " << work_time.value();
-                std::cout << program << std::endl;
-                return 1;
-            }
-        }
-
-        auto relax_time    = start.present("--relax-time");
-        auto relax_seconds = std::optional<unsigned int>();
-        if (relax_time.has_value()) {
-            relax_seconds = parse_time(relax_time.value());
-            if (!relax_seconds.has_value()) {
-                std::cout << "Invalid time input: " << relax_time.value();
-                std::cout << program << std::endl;
-                return 1;
-            }
-        }
-
-        Controller::send_start_message(start.present("--name"), work_seconds, relax_seconds);
-    }
-    // Stop message
-    else if (program.is_subcommand_used(stop)) {
-        Controller::send_stop_message();
-    }
-    // Config message
-    else if (program.is_subcommand_used(config)) {
-        Controller::send_config_message(program["--auto-reload"] == true);
-    }
-    // Report message
-    else if (program.is_subcommand_used(report)) {
-        if (auto response = optional<string>(); (response = Controller::send_report_message()).has_value()) {
-            std::cout << response.value() << "\n";
-        }
-    }
-    // Server mode
-    else {
-        Controller controller = Controller(program["--auto-reload"] == true);
-
-        {
-            struct sigaction sa;
-            sigemptyset(&sa.sa_mask);
-            sa.sa_flags   = 0;
-            sa.sa_handler = signal_handler;
-            sigaction(SIGINT, &sa, nullptr);
-        }
-
-        while (!controller.should_quit()) {
-            controller.manage_server();
-        }
     }
 
     return 0;

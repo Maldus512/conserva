@@ -19,7 +19,7 @@ static optional<string> receive_with_timeout(int socket_fd, struct sockaddr *soc
 SocketQueueSender::SocketQueueSender(std::filesystem::path path) {
     int fd = socket(AF_UNIX, SOCK_DGRAM, 0);
     if (fd < 0) {
-        throw string("Client socket creation failed!");
+        throw std::runtime_error("Client socket creation failed!");
     } else {
         this->socket_fd = fd;
     }
@@ -28,15 +28,15 @@ SocketQueueSender::SocketQueueSender(std::filesystem::path path) {
     client_addr.sun_family  = AF_UNIX;
     client_addr.sun_path[0] = '\0';     // Abstract socket
 
-    char client_socket_name[64] = {0};
+    char client_socket_name[128] = {0};
     if (std::snprintf(client_socket_name, sizeof(client_socket_name), "conserva_client_socket_%d.sock", getpid()) >=
         (int)sizeof(client_socket_name)) {
-        throw string("snprintf failed!");
+        throw std::runtime_error("Client socket name too long!");
     }
     strncpy(&client_addr.sun_path[1], client_socket_name, sizeof(client_addr.sun_path) - 2);
 
     if (bind(this->socket_fd, (struct sockaddr *)&client_addr, sizeof(sa_family_t) + 1 + strlen(client_socket_name))) {
-        throw string("Bind failed!");
+        throw std::runtime_error("Bind failed!");
     }
 
     this->path = path;

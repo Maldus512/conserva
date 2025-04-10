@@ -38,7 +38,7 @@ static bool auto_reload_command = false;
 
 Tray::Tray(void) {
     if (tray_init(&tray) < 0) {
-        throw std::runtime_error("failed to create tray!");
+        throw std::runtime_error("Failed to create tray!");
     }
 }
 

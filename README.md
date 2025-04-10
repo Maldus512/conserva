@@ -44,12 +44,11 @@ It isn't pretty but it serves both purposes.
 
  - [x] Query state (also show in notification)
  - [x] Add an "auto reload" option
- - [ ] Print logs to log file (https://github.com/gabime/spdlog?tab=readme-ov-file)
  - [ ] Create snap packet
  - [ ] Create apt packet
  - [ ] Create flatpak packet
- - [ ] Save last activity to data file 
  - [ ] Allow for customizable images and sounds in notification
+ - [ ] Save last activity to data file 
 
 ## Credits
 
