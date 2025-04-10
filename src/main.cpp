@@ -14,7 +14,9 @@ static std::optional<unsigned int> parse_time(std::string string);
 
 int main(int argc, char *argv[]) {
     auto program = argparse::ArgumentParser(argv[0]);
-    program.add_description("A command line first pomodoro timer").add_epilog("Run with no arguments to start a server instance.");
+    program.add_description("A command line first pomodoro timer")
+        .add_epilog("Run with no arguments to start a server instance.");
+    program.add_argument("-a", "--auto-reload").flag().help("Automatically reload pomodoro timer when finished");
 
     auto start = argparse::ArgumentParser("start");
     start.add_argument("-n", "--name").help("Pomodoro name");
@@ -23,10 +25,19 @@ int main(int argc, char *argv[]) {
     start.add_description("Start pomodoro iteration");
 
     auto stop = argparse::ArgumentParser("stop");
-    start.add_description("Pause current pomodoro");
+    stop.add_description("Pause current pomodoro");
+
+    auto report = argparse::ArgumentParser("report");
+    report.add_description("Print (and show in notification) current pomodoro information");
+
+    auto config = argparse::ArgumentParser("config");
+    config.add_description("Configure an existing instance");
+    config.add_argument("-a", "--auto-reload").flag().help("Automatically reload pomodoro timer when finished");
 
     program.add_subparser(start);
     program.add_subparser(stop);
+    program.add_subparser(report);
+    program.add_subparser(config);
 
     try {
         program.parse_args(argc, argv);
@@ -66,14 +77,24 @@ int main(int argc, char *argv[]) {
         }
 
         Controller::send_start_message(start.present("--name"), work_seconds, relax_seconds);
-    } 
+    }
     // Stop message
     else if (program.is_subcommand_used(stop)) {
         Controller::send_stop_message();
-    } 
+    }
+    // Config message
+    else if (program.is_subcommand_used(config)) {
+        Controller::send_config_message(program["--auto-reload"] == true);
+    }
+    // Report message
+    else if (program.is_subcommand_used(report)) {
+        if (auto response = optional<string>(); (response = Controller::send_report_message()).has_value()) {
+            std::cout << response.value() << "\n";
+        }
+    }
     // Server mode
     else {
-        Controller controller = Controller();
+        Controller controller = Controller(program["--auto-reload"] == true);
 
         {
             struct sigaction sa;

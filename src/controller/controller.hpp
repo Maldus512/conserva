@@ -10,15 +10,18 @@
 
 
 using std::optional;
+using std::string;
 
 
 class Controller {
   public:
-    static void send_start_message(optional<std::string> name, optional<unsigned int> work_seconds,
-                                   optional<unsigned int> relax_seconds);
-    static void send_stop_message(void);
+    static void             send_start_message(optional<std::string> name, optional<unsigned int> work_seconds,
+                                               optional<unsigned int> relax_seconds);
+    static void             send_stop_message(void);
+    static optional<string> send_report_message(void);
+    static void             send_config_message(bool auto_reload);
 
-    Controller(void);
+    explicit Controller(bool auto_reload);
     void manage_server(void);
     bool should_quit(void) const;
 

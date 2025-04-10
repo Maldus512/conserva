@@ -8,6 +8,7 @@ class Notifier {
   public:
     Notifier(void);
     void show_update(const Model &model);
+    void show_report(const Model &model);
 };
 
 #endif

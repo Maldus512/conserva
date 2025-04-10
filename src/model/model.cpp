@@ -94,9 +94,16 @@ bool Model::manage(void) {
         }
         case PomodoroState::relaxing: {
             if (this->stopwatch.is_running() && this->stopwatch.is_expired()) {
-                this->state = PomodoroState::standby;
-                this->stopwatch.pause();
-                return true;
+                if (this->auto_reload) {
+                    this->state     = PomodoroState::working;
+                    this->stopwatch = Stopwatch(config.relax_seconds * 1000UL);
+                    this->stopwatch.resume();
+                    return true;
+                } else {
+                    this->state = PomodoroState::standby;
+                    this->stopwatch.pause();
+                    return true;
+                }
             }
             break;
         }

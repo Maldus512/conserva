@@ -22,9 +22,12 @@ class Model {
         constexpr bool operator!=(PomodoroConfig config);
     };
 
-    explicit Model(void)
-        : state(PomodoroState::standby), config({"work", 25 * 60, 5 * 60}), stopwatch(Stopwatch(0)), terminated(false) {
-    }
+    bool report;
+    bool auto_reload;
+
+    explicit Model(bool auto_reload)
+        : report(false), auto_reload(auto_reload), state(PomodoroState::standby), config({"pomodoro", 25 * 60, 5 * 60}),
+          stopwatch(Stopwatch(0)), terminated(false) {}
     PomodoroState    get_state(void) const;
     std::string      get_name(void) const;
     bool             start_pomodoro(void);

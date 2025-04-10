@@ -10,39 +10,60 @@
 
 
 using std::optional;
+using std::string;
 
 
 namespace commands {
 
 class Command {
   public:
-    virtual ~Command(void)                            = default;
-    virtual constexpr std::string toJson(void)        = 0;
-    virtual bool                  visit(Model &model) = 0;     // Why.
+    virtual ~Command(void)                                        = default;
+    virtual string                            to_json(void) const = 0;
+    virtual std::pair<bool, optional<string>> visit(Model &model) = 0;     // Why.
+    virtual bool                              requires_response(void) const;
 
-    static optional<Command *> fromJson(std::string json_string);
+    static optional<Command *> from_json(string json_string);
 
   private:
 };
 
 class Start : public Command {
   public:
-    Start(optional<std::string> name, optional<unsigned int> work_seconds, optional<unsigned int> relax_seconds)
+    Start(optional<string> name, optional<unsigned int> work_seconds, optional<unsigned int> relax_seconds)
         : name(name), work_seconds(work_seconds), relax_seconds(relax_seconds) {}
 
-    std::string toJson(void) override;
-    bool        visit(Model &model) override;
+    string                            to_json(void) const override;
+    std::pair<bool, optional<string>> visit(Model &model) override;
 
   private:
-    optional<std::string>  name;
+    optional<string>       name;
     optional<unsigned int> work_seconds;
     optional<unsigned int> relax_seconds;
 };
 
 class Stop : public Command {
   public:
-    std::string toJson(void) override;
-    bool        visit(Model &model) override;
+    string                            to_json(void) const override;
+    std::pair<bool, optional<string>> visit(Model &model) override;
+};
+
+class Report : public Command {
+  public:
+    string                            to_json(void) const override;
+    std::pair<bool, optional<string>> visit(Model &model) override;
+    bool                              requires_response(void) const override;
+};
+
+class Config : public Command {
+  public:
+    Config(bool auto_reload) : auto_reload(auto_reload){};
+
+    string                            to_json(void) const override;
+    std::pair<bool, optional<string>> visit(Model &model) override;
+
+    bool auto_reload;
+
+  private:
 };
 
 class Server {
@@ -50,14 +71,14 @@ class Server {
     static void remove_socket(void);
 
     Server(void);
-    optional<Command *> receive(void);
+    bool receive(Model &model);
 
   private:
     SocketQueueReceiver receiver;
 };
 
 
-void send(Command *command);
+optional<string> send(const Command *command);
 
 }     // namespace commands
 

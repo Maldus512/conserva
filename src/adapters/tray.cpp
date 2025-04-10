@@ -13,11 +13,8 @@
 static void quit_cb(struct tray_menu_item *item);
 static void start_cb(struct tray_menu_item *item);
 static void stop_cb(struct tray_menu_item *item);
-
-
-void window_cb(struct tray *tray) {
-    (void)tray;
-}
+static void auto_reload_cb(struct tray_menu_item *item);
+static void window_cb(struct tray *tray);
 
 
 static struct tray tray = {
@@ -27,13 +24,16 @@ static struct tray tray = {
     .menu =
         (struct tray_menu_item[]){
             {.text = "Start", .cb = start_cb},
+            {.text = "Auto reload", .cb = auto_reload_cb},
             {.text = "Quit", .cb = quit_cb},
             {.text = NULL},
         },
 };
-static bool quit          = false;
-static bool start_command = false;
-static bool stop_command  = false;
+static bool quit                = false;
+static bool start_command       = false;
+static bool stop_command        = false;
+static bool report_command      = false;
+static bool auto_reload_command = false;
 
 
 Tray::Tray(void) {
@@ -53,6 +53,14 @@ bool Tray::manage(Model &model) {
     if (stop_command) {
         result |= model.stop();
         stop_command = false;
+    }
+    if (report_command) {
+        model.report   = true;
+        report_command = false;
+    }
+    if (auto_reload_command) {
+        model.auto_reload   = !model.auto_reload;
+        auto_reload_command = false;
     }
     if (quit) {
         model.quit();
@@ -87,6 +95,8 @@ void Tray::update(Model &model) {
         }
     }
 
+    tray.menu[1].checked = model.auto_reload;
+
     tray_update(&tray);
 }
 
@@ -112,4 +122,16 @@ static void start_cb(struct tray_menu_item *item) {
 static void stop_cb(struct tray_menu_item *item) {
     (void)item;
     stop_command = true;
+}
+
+
+static void auto_reload_cb(struct tray_menu_item *item) {
+    (void)item;
+    auto_reload_command = true;
+}
+
+
+static void window_cb(struct tray *tray) {
+    (void)tray;
+    report_command = true;
 }
