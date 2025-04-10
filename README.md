@@ -1,4 +1,12 @@
-# Conserva
+# Conserva 
+
+con|sèr|va
+pronunciation: */konˈsɛrva/*
+*Feminine noun*
+
+ 1. **To preserve, especially foods (e.g. fruit or vegatables, tipically tomatoes).**
+ 2. Food prepared to be stored for long periods of time without losing its flavour and nutrition values.
+ 3. Container or place where something is preserved.
 
 A simple, down to earth pomodoro timer with a command line interface, a system tray and libnotify integration.
 
@@ -45,10 +53,9 @@ It isn't pretty but it serves both purposes.
  - [x] Query state (also show in notification)
  - [x] Add an "auto reload" option
  - [ ] Create snap packet
- - [ ] Create apt packet
- - [ ] Create flatpak packet
+ - [x] Create apt packet
  - [ ] Allow for customizable images and sounds in notification
- - [ ] Save last activity to data file 
+ - [ ] Keep track of the last n activities and show them in a tray submenu
 
 ## Credits
 
