@@ -1,0 +1,16 @@
+id: org.maldus512.conserva
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+command: conserva
+modules:
+  - name: conserva
+    buildsystem: cmake-ninja
+    build-commands:
+      - cmake -G Ninja -B build -DCMAKE_INSTALL_PREFIX=/app -DCMAKE_BUILD_TYPE=Release 
+      - cmake --install build
+    sources:
+      - type: script
+        dest-filename: hello.sh
+        commands:
+          - echo "Hello world, from a sandbox"

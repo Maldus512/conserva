@@ -28,7 +28,7 @@ SocketQueueSender::SocketQueueSender(std::filesystem::path path) {
     client_addr.sun_family  = AF_UNIX;
     client_addr.sun_path[0] = '\0';     // Abstract socket
 
-    char client_socket_name[128] = {0};
+    char client_socket_name[96] = {0};
     if (std::snprintf(client_socket_name, sizeof(client_socket_name), "conserva_client_socket_%d.sock", getpid()) >=
         (int)sizeof(client_socket_name)) {
         throw std::runtime_error("Client socket name too long!");

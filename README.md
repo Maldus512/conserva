@@ -1,7 +1,9 @@
 # Conserva 
 
 con|sèr|va
+
 pronunciation: */konˈsɛrva/*
+
 *Feminine noun*
 
  1. **To preserve, especially foods (e.g. fruit or vegatables, tipically tomatoes).**
@@ -54,6 +56,7 @@ It isn't pretty but it serves both purposes.
  - [x] Add an "auto reload" option
  - [ ] Create snap packet
  - [x] Create apt packet
+ - [ ] Create flatpak packet
  - [ ] Allow for customizable images and sounds in notification
  - [ ] Keep track of the last n activities and show them in a tray submenu
 
